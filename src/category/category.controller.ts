@@ -20,12 +20,13 @@ export class CategoryController {
   }
 
   @Get()
-  async findAllCategory(@Query('name') name: string): Promise<object> {
-    console.log(name);
-
-    return name
-      ? await this.categoryService.findByName(name)
-      : await this.categoryService.findAll();
+  async findAllCategory(
+    @Query('name') name: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 5,
+  ): Promise<object> {
+    if (name) return await this.categoryService.findByName(name);
+    else if (page) return await this.categoryService.findAll(page, pageSize);
   }
 
   @Get(':id')

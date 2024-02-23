@@ -6,7 +6,7 @@ import { PrismaService } from 'src/databases/PrismaService';
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
-  async createCategory(data: CreateCategoryDto) {
+  async createCategory(data: CreateCategoryDto): Promise<object> {
     const carsExists = this.prisma.category.findFirst({
       where: { name: data.name },
     });
@@ -20,15 +20,18 @@ export class CategoryService {
     });
   }
 
-  async findAll() {
+  async findAll(page: number, pageSize: number): Promise<object> {
+    const skip = (page - 1) * pageSize;
     return await this.prisma.category.findMany({
+      skip,
+      take: pageSize,
       include: {
         cars: true,
       },
     });
   }
 
-  async findByName(name: string) {
+  async findByName(name: string): Promise<object> {
     return await this.prisma.category.findFirst({
       where: { name: name },
       include: {
