@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CarService } from './car.service';
 import { CreateCarsDto } from 'src/dtos/car.dto';
@@ -15,13 +16,19 @@ export class CarController {
   constructor(private readonly carService: CarService) {}
 
   @Post()
-  async create(@Body() data: CreateCarsDto) {
-    return await this.carService.create(data);
+  async create(@Body() data: CreateCarsDto): Promise<void> {
+    await this.carService.create(data);
   }
 
   @Get()
-  async findAll(): Promise<object> {
-    return await this.carService.findAll();
+  async findAll(
+    @Query('name') name: string,
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+  ): Promise<object | void> {
+    if (name) return await this.carService.filterAllByBrand(name);
+    else if (page)
+      return await this.carService.filterAllByPages(page, pageSize);
   }
 
   @Get(':id')
@@ -33,12 +40,12 @@ export class CarController {
   async updateDataCars(
     @Param('id') id: number,
     @Body() data: CreateCarsDto,
-  ): Promise<object> {
-    return await this.carService.update(id, data);
+  ): Promise<void> {
+    await this.carService.update(id, data);
   }
 
   @Delete(':id')
-  async deleteDataCars(@Param('id') id: number): Promise<object> {
-    return await this.carService.delete(id);
+  async deleteDataCars(@Param('id') id: number): Promise<void> {
+    await this.carService.delete(id);
   }
 }

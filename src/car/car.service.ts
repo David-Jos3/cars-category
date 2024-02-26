@@ -1,43 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCarsDto } from 'src/dtos/car.dto';
-import { PrismaService } from 'src/databases/PrismaService';
+import { CarRespository } from 'src/repositories/car.repository';
 
 @Injectable()
 export class CarService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private carRepository: CarRespository) {}
 
-  async create(data: CreateCarsDto): Promise<object> {
-    const carsExists = await this.prisma.car.findFirst({
-      where: { name: data.name, year: data.year, model: data.model },
-    });
-    if (carsExists) {
-      throw new Error('Car already exists');
-    }
-    return await this.prisma.car.create({
-      data,
-    });
+  async create(data: CreateCarsDto): Promise<void> {
+    await this.carRepository.create(data);
   }
 
-  async findAll(): Promise<object> {
-    return await this.prisma.car.findMany();
+  async filterAllByPages(page: number, pageSize: number): Promise<void> {
+    return this.carRepository.findByPages(page, pageSize);
+  }
+
+  async filterAllByBrand(name: string): Promise<object> {
+    return this.carRepository.findByBrand(name);
   }
 
   async findById(id: number): Promise<object> {
-    return await this.prisma.car.findUnique({
-      where: { id: Number(id) },
-    });
+    return this.carRepository.findById(id);
   }
 
-  async update(id: number, data: CreateCarsDto): Promise<object> {
-    return await this.prisma.car.update({
-      where: { id: Number(id) },
-      data,
-    });
+  async update(id: number, data: CreateCarsDto): Promise<void> {
+    await this.carRepository.update(id, data);
   }
 
-  async delete(id: number): Promise<object> {
-    return await this.prisma.car.delete({
-      where: { id: Number(id) },
-    });
+  async delete(id: number): Promise<void> {
+    await this.carRepository.delete(id);
   }
 }

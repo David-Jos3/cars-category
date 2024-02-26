@@ -27,5 +27,5 @@ export class CreateCategoryDto {
   @ValidateNested({ each: true })
   @Type(() => CreateCarsDto)
   @IsOptional()
-  cars: CreateCarsDto[] | unknown;
+  cars: CreateCarsDto[];
 }
